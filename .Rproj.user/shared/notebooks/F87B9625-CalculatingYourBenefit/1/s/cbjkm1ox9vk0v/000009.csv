@@ -1,0 +1,4 @@
+"0","ggplot(data = getPiaAdjustments(birthYear = lubridate::year(birthDateJQ)),"
+"0","       aes(x = `First Distribution Age`, y = `Percentage of PIA`, group = `Year of birth`)) +"
+"0","  geom_line() +"
+"0","  theme_minimal()"

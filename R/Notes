@@ -1,0 +1,8 @@
+getFicaEarnings should be a vectorized function that returns the values for the years contained in the vector.
+
+getMedicareEarnings should be a vectorized function that returns the values for the years contained in the vector.
+
+
+KNOWN BUGS
+- in the getXXXValues functions, the returned values are not guaranteed to be ordered as per the input years and there is no way to determine which values are associated with with input years. Either return both the years and the values or order the return values by the input years vector.
+

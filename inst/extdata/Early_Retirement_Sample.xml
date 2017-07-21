@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<osss:OnlineSocialSecurityStatementData xmlns:osss="http://ssa.gov/osss/schemas/1.0">
+    <osss:FileCreationDate>2015-09-18T15:47:48.711-04:00</osss:FileCreationDate>
+    <osss:UserInformation>
+        <osss:Name>John Q. Public</osss:Name>
+        <osss:DateOfBirth>1977-12-30</osss:DateOfBirth>
+    </osss:UserInformation>
+    <osss:EstimatedBenefits>
+        <osss:EarlyRetirementEstimate>
+            <osss:RetirementAge>
+                <osss:Years>62</osss:Years>
+            </osss:RetirementAge>
+            <osss:Estimate>399</osss:Estimate>
+        </osss:EarlyRetirementEstimate>
+        <osss:FullRetirementEstimate>
+            <osss:RetirementAge>
+                <osss:Years>67</osss:Years>
+                <osss:Months>0</osss:Months>
+            </osss:RetirementAge>
+            <osss:Estimate>567</osss:Estimate>
+        </osss:FullRetirementEstimate>
+        <osss:DelayedRetirementEstimate>
+            <osss:RetirementAge>
+                <osss:Years>70</osss:Years>
+            </osss:RetirementAge>
+            <osss:Estimate>704</osss:Estimate>
+        </osss:DelayedRetirementEstimate>
+        <osss:DisabilityEstimate></osss:DisabilityEstimate>
+        <osss:OneTimeDeathBenefit>255</osss:OneTimeDeathBenefit>
+        <osss:SurvivorsEstimateChild>828</osss:SurvivorsEstimateChild>
+        <osss:SurvivorsEstimateFamily>1714</osss:SurvivorsEstimateFamily>
+        <osss:SurvivorsEstimateRetired>1104</osss:SurvivorsEstimateRetired>
+        <osss:SurvivorsEstimateSpouseChild>828</osss:SurvivorsEstimateSpouseChild>
+    </osss:EstimatedBenefits>
+    <osss:EarningsRecord>
+        <osss:Earnings endYear="1992" startYear="1992">
+            <osss:FicaEarnings>887</osss:FicaEarnings>
+            <osss:MedicareEarnings>887</osss:MedicareEarnings>
+        </osss:Earnings>
+        <osss:Earnings endYear="1993" startYear="1993">
+            <osss:FicaEarnings>1647</osss:FicaEarnings>
+            <osss:MedicareEarnings>1647</osss:MedicareEarnings>
+        </osss:Earnings>
+        <osss:Earnings endYear="1994" startYear="1994">
+            <osss:FicaEarnings>1702</osss:FicaEarnings>
+            <osss:MedicareEarnings>1702</osss:MedicareEarnings>
+        </osss:Earnings>
+        <osss:Earnings endYear="1995" startYear="1995">
+            <osss:FicaEarnings>1255</osss:FicaEarnings>
+            <osss:MedicareEarnings>1255</osss:MedicareEarnings>
+        </osss:Earnings>
+        <osss:Earnings endYear="1996" startYear="1996">
+            <osss:FicaEarnings>2545</osss:FicaEarnings>
+            <osss:MedicareEarnings>2545</osss:MedicareEarnings>
+        </osss:Earnings>
+        <osss:Earnings endYear="1997" startYear="1997">
+            <osss:FicaEarnings>9137</osss:FicaEarnings>
+            <osss:MedicareEarnings>11110</osss:MedicareEarnings>
+        </osss:Earnings>
+        <osss:Earnings endYear="1998" startYear="1998">
+            <osss:FicaEarnings>25707</osss:FicaEarnings>
+            <osss:MedicareEarnings>25707</osss:MedicareEarnings>
+        </osss:Earnings>
+        <osss:Earnings endYear="1999" startYear="1999">
+            <osss:FicaEarnings>28205</osss:FicaEarnings>
+            <osss:MedicareEarnings>28205</osss:MedicareEarnings>
+        </osss:Earnings>
+        <osss:Earnings endYear="2000" startYear="2000">
+            <osss:FicaEarnings>22992</osss:FicaEarnings>
+            <osss:MedicareEarnings>22992</osss:MedicareEarnings>
+        </osss:Earnings>
+        <osss:Earnings endYear="2001" startYear="2001">
+            <osss:FicaEarnings>24745</osss:FicaEarnings>
+            <osss:MedicareEarnings>24745</osss:MedicareEarnings>
+        </osss:Earnings>
+        <osss:Earnings endYear="2002" startYear="2002">
+            <osss:FicaEarnings>16826</osss:FicaEarnings>
+            <osss:MedicareEarnings>16826</osss:MedicareEarnings>
+        </osss:Earnings>
+        <osss:Earnings endYear="2003" startYear="2003">
+            <osss:FicaEarnings>11475</osss:FicaEarnings>
+            <osss:MedicareEarnings>11475</osss:MedicareEarnings>
+        </osss:Earnings>
+        <osss:Earnings endYear="2004" startYear="2004">
+            <osss:FicaEarnings>0</osss:FicaEarnings>
+            <osss:MedicareEarnings>19065</osss:MedicareEarnings>
+        </osss:Earnings>
+        <osss:Earnings endYear="2005" startYear="2005">
+            <osss:FicaEarnings>0</osss:FicaEarnings>
+            <osss:MedicareEarnings>33170</osss:MedicareEarnings>
+        </osss:Earnings>
+        <osss:Earnings endYear="2006" startYear="2006">
+            <osss:FicaEarnings>22721</osss:FicaEarnings>
+            <osss:MedicareEarnings>46218</osss:MedicareEarnings>
+        </osss:Earnings>
+        <osss:Earnings endYear="2007" startYear="2007">
+            <osss:FicaEarnings>21363</osss:FicaEarnings>
+            <osss:MedicareEarnings>38751</osss:MedicareEarnings>
+        </osss:Earnings>
+        <osss:Earnings endYear="2008" startYear="2008">
+            <osss:FicaEarnings>0</osss:FicaEarnings>
+            <osss:MedicareEarnings>44069</osss:MedicareEarnings>
+        </osss:Earnings>
+        <osss:Earnings endYear="2009" startYear="2009">
+            <osss:FicaEarnings>0</osss:FicaEarnings>
+            <osss:MedicareEarnings>46820</osss:MedicareEarnings>
+        </osss:Earnings>
+        <osss:Earnings endYear="2010" startYear="2010">
+            <osss:FicaEarnings>0</osss:FicaEarnings>
+            <osss:MedicareEarnings>53798</osss:MedicareEarnings>
+        </osss:Earnings>
+        <osss:Earnings endYear="2011" startYear="2011">
+            <osss:FicaEarnings>0</osss:FicaEarnings>
+            <osss:MedicareEarnings>0</osss:MedicareEarnings>
+        </osss:Earnings>
+        <osss:Earnings endYear="2012" startYear="2012">
+            <osss:FicaEarnings>0</osss:FicaEarnings>
+            <osss:MedicareEarnings>0</osss:MedicareEarnings>
+        </osss:Earnings>
+        <osss:Earnings endYear="2013" startYear="2013">
+            <osss:FicaEarnings>0</osss:FicaEarnings>
+            <osss:MedicareEarnings>0</osss:MedicareEarnings>
+        </osss:Earnings>
+        <osss:Earnings endYear="2014" startYear="2014">
+            <osss:FicaEarnings>-1</osss:FicaEarnings>
+            <osss:MedicareEarnings>-1</osss:MedicareEarnings>
+        </osss:Earnings>
+        <osss:FicaTaxTotalEmployer>11847</osss:FicaTaxTotalEmployer>
+        <osss:FicaTaxTotalIndividual>11847</osss:FicaTaxTotalIndividual>
+        <osss:MedicareTaxTotalEmployer>6238</osss:MedicareTaxTotalEmployer>
+        <osss:MedicareTaxTotalIndividual>6238</osss:MedicareTaxTotalIndividual>
+    </osss:EarningsRecord>
+</osss:OnlineSocialSecurityStatementData>

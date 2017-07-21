@@ -1,0 +1,251 @@
+---
+title: "Sample Social Security Benefit Calculation"
+author: "Tim Jacobs"
+date: "`r Sys.Date()`"
+output:
+      rmarkdown::html_vignette:
+        fig_caption: yes
+urlcolor: "blue"
+vignette: >
+  %\VignetteIndexEntry{Sample Social Security Benefit Calculation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+
+```{r libraryOpts, echo=FALSE, message=FALSE, warning=FALSE}
+library("knitr")
+library("ggplot2")
+library("scales")
+library("lubridate")
+library("reshape2")
+library("earth")
+library("oasdir")
+
+opts_chunk$set(warning = FALSE,
+               message = FALSE,
+               echo = FALSE)
+```
+
+
+
+This vignette describes some of the aspects of calculating a Social Security benefit and demonstrates a use case for the oasdir package -- the calculation of the Social Security Primary Insurance Amount. Much of the explanatory text behind the benefit calculation is taken directly from the [Socal Security Website](https://www.ssa.gov).
+
+
+
+# How is the Social Security Benefit Determined?
+When a person works and pays Social Security taxes, they earn *credits* toward Social Security benefits. The number of credits needed to get retirement benefits depends on when the person was born. For anyone born in 1929 or later, they need 40 credits (10 years of work) to qualify for Social Security Benefits.
+
+Social Security is an insurance. The actual name of the insurance is Old Age, Survivor, and Disability Insurance (OASDI) and the "premium" paid by each beneficiary is based on the *Taxed Social Security Earnings* of taxable income. The OASDI program limits the amount of earnings subject to Social Security taxation for a given year but the limits generally increase from year to year. This limit is referred to as the [Contribution and Benefits Base](https://www.ssa.gov/oact/COLA/cbb.html). So the taxed wages used to calculate the benefit are the actual wages earned up to the Contribution and Benefit Base for any year. The Social Security benefit is computed using a person's *Average Indexed Monthly Earnings (AIME)*, which is a normalized wage value. A dollar earned 30 years ago is worth more than a dollar earned today. The year in which a person turns 60 is the indexing year for normalizing wages earned prior to that year. Any wages earned after the age of 60 are not adjusted. The government uses the [National Average Wage Index](https://www.ssa.gov/oact/COLA/AWI.html) to determine how much wages in a given year are worth relative to the indexing year. The highest 35 years of indexed wages are averaged and divided by 420 (the number of months in 35 years) to calculate the AIME. Note that only years after the year in which the beneficiary turned 21 are counted. The AIME, in turn, is used to determine the [Primary Insurance Amount](https://www.ssa.gov/oact/COLA/piaformula.html) which is the benefit (before rounding down to next lower whole dollar) a person would receive if he/she elects to begin receiving retirement benefits at his/her [Normal Retirement Age](https://www.ssa.gov/oact/ProgData/nra.html). The Normal Retirement Age is the age at which full Social Security benefits can be started. The Normal Retirement Age is based on the year in which a person was born and has increased over time, so people born in later years have a higher NRA. Distributions taken before NRA reduce the PIA whereas distributions taken after NRA increase the PIA.
+
+Each of these concepts is explored more fully in the subsections below.
+
+
+
+
+## Normal Retirement Age (NRA)
+Normal Retirement Age is the age at which a beneficiary receives the full amount of the insurance benefit. The NRA has increased over the years. If a person's birthday is on January 1^st^, use the year before the actual birth year to determine the NRA. The plot below shows the Normal Retirement Age by birth year for people born after January 1^st^. For anyone born before 1937 the normal retirement age is 65. You can retrieve the full Normal Retirement Age data using the `getFraSet()` function or, for specific years, use the `getFraValues()` function.
+
+```{r NRAplot, echo = TRUE}
+ggplot(getFraSet(), aes(x = `Birth Year`, y = `Full Retirement Age`)) +
+  geom_line() +
+  theme_minimal()
+```
+
+
+
+## National Average Wage Index (AWI)
+The National Average Wage Index is used to normalize wages across different years. Wage indexing depends on the year in which a person is first eligible to receive benefits. For retirement, the eligibility age is 62, so the year in which one turns 62 is that person's year of eligibility. An individuals earnings are always indexed to the average wage level two years prior to the year of first eligibility. This is called the *indexing year*. Thus, for a person reaching age 62 in 2017, the person's earnings would be indexed to the average wage index for 2015, which is the indexing year. Earnings in a year before 2015 would be multiplied by the ratio of the 2015 average wage index to the average wage index for that year; earnings in 2015 or later would be taken at face value. A table of [Average Wage Indexes](https://www.ssa.gov/OACT/COLA/awiseries.html) is available on the Social Security web site.
+
+The table only lists average wage indexes up to the current year in effect. For instance, in 2017, the table only shows values to the year 2015. In order to determine the Average Indexed Monthly Earnings when the Normal Retirement Age is beyond the last year in the government's AWI table, the oasdir package fits a model to the data which is then used to project future wage index values. The graphic below shows this data. The legend identifies the government values as "Actual" and the modeled values as "Predicted". The oasdir package provides the `getAwiSet()` and `getAwiValues()`  functions to return these values.
+
+```{r plotAwi, echo = TRUE}
+ggplot(getAwiSet(endYear = 2025), aes(x = Year, y = AWI, color = Status)) +
+  geom_line() +
+  theme_minimal() +
+  theme(legend.position = "bottom") +
+  guides(colour = guide_legend(title = NULL)) +
+  scale_y_continuous(labels = dollar_format()) 
+```
+
+
+
+
+## Contribution and Benefit Bases
+Each Social Security benefit is based on the history of earned and taxable income. The income considered is limited by the *Benefit and Contribution Base* which changes from year to year to reflect the average of wages earned in that year across the nation. This amount is called the Taxed Social Security Earnings and it is related to the Average Wage Index. The Social Security web site contains a table of [Contribution and Benefits Bases](https://www.ssa.gov/oact/COLA/cbb.html) which is shown graphically below. Since this value limits the wage amount used in the Social Security benefit calculation (as well as the taxed amount) it is an important number to know. Unfortunately, future values cannot be known and therefore must be estimated. Again, the oasdir package fits a model to this data and uses that model to estimate future values, labeled as "Predicted" in the plot below. The oasdir package provides the `getBenefitBaseSet()` and `getBenefitBaseValues()` functions to retrieve these values.
+
+```{r benefitBasePlot, echo=TRUE}
+ggplot(getBenefitBasesSet(endYear = 2025), aes(x = Year, y = Amount,
+                                               color = Status)) +
+  geom_line() +
+  theme_minimal() +
+  theme(legend.position = "bottom") +
+  guides(colour = guide_legend(title = NULL)) +
+  scale_y_continuous(labels = dollar_format())
+```
+
+
+
+## Earnings History
+The government keeps a record of past Taxed Social Security Earnings which can be accessed by establishing an account on the [Social Security Administration web site](https://www.ssa.gov/myaccount/). This record is available as an XML file which can be downloaded onto your disk. In the code block below, we read in a sample Social Security statement in the XML format provided by the government using the oasdir `readStatement()` function. This returns a list containing the creation date of the statement, some user information, a record of earnings, estimates of benefits, and total FICA and Medicare taxes paid. We can use other functions from the oasdir package to get at these pieces of information.
+
+One of the primary use cases for the oasdir package is estimate a Social Security benefit. This requires estimates of future earnings, future indexing factors, and future benefit bases. In the code below, we ask to return Medicare and FICA earnings out to the year our example person retires, which we set to be the year one month after he turns 62. Some of these values must be estimated and so warnings are issued indicating that this is the case. We also start to build a dataframe from this data that we will plot a bit later.
+
+```{r earnings, echo = TRUE, message=FALSE}
+# Read Social Security Statement
+ssStatement <- system.file("extdata", "Early_Retirement_Sample.xml", package = "oasdir")
+ssJQ <- readStatement(file = ssStatement)
+
+# Retrieve some of the information from the statement
+birthDateJQ <- as.Date(ssJQ$userInformation$dateOfBirth)
+retireElgYearJQ <- year(birthDateJQ + years(62))
+retireAgeJQ <-62
+retireDateJQ <- birthDateJQ + years(retireAgeJQ) + months(1)
+
+lastYear <- year(retireDateJQ)
+earningsJQMedicare <- getMedicareEarnings(ssJQ, endYear = lastYear)
+colnames(earningsJQMedicare) <- c("startYear", "endYear", "Earnings")
+earningsJQMedicare$Type <- "Medicare"
+earningsJQFica <- getFicaEarnings(ssJQ, endYear = lastYear)
+colnames(earningsJQFica) <- c("startYear", "endYear", "Earnings")
+earningsJQFica$Type <- "FICA"
+earningsJQLong <- rbind(earningsJQMedicare, earningsJQFica)
+```
+
+
+## Average Indexed Monthly Earnings (AIME)
+In this section, we calculate the Average Indexed Monthly Earnings using indexing factors. The Taxed Social Security Earnings retrieved in the previous subsection must be adjusted using the ratio of the AWI at age 60 to the AWI for the year of the earnings. The oasdir function `getAimeValue()` does these calculations for us to provide a single average indexed monthly earning value.
+
+```{r calcAwiIndexFactor, echo = TRUE}
+aimeJQ <- getAimeValue(ssStmt = ssJQ, endYear = year(retireDateJQ))
+```
+
+After applying this adjustment, the average indexed monthly earnings for John Q. Public is calculated to be \$`r format(aimeJQ, big.mark = ",")`. A plot of FICA earnings, Medicare earnings and indexed monthly earnings can be constructed using the `getAimeSet()` function to return the entire set of monthly earnings used to calculate the AIME. The code block below shows the construction of this plot. The average yearly indexed earnings is shown by the dotted line. Note that in this plot the FICA earnings are the same as the medicare earnings because the earnings were below the benefit and contribution base values.
+
+
+```{r recordedBenefitsPlot, echo = TRUE}
+# Construct a combined data set to plot
+aimeSetJQ <- getAimeSet(ssStmt = ssJQ, endYear = year(retireDateJQ))
+temp <- aimeSetJQ
+temp$Type <- "Indexed"
+colnames(temp) <- c("startYear", "endYear", "ficaEarnings", "factors", "Earnings", "Type")
+earningsJQLong <- rbind(earningsJQLong, temp[, c("startYear", "endYear",
+                                                 "Earnings", "Type")])
+rm(temp)
+
+# plot the data
+ggplot(earningsJQLong, aes(x = `startYear`, y = Earnings)) +
+  geom_line(aes(color = Type)) +
+  geom_hline(yintercept = aimeJQ*12, linetype = 2) +
+  theme_minimal() +
+  scale_y_continuous(labels = dollar_format()) +
+  theme(legend.position = "bottom") +
+  guides(colour = guide_legend(title = NULL))
+```
+
+
+
+## Primary Insurance Amount (PIA) and Family Maximum Benefit
+The [Primary Insurance Amount](https://www.ssa.gov/oact/COLA/piaformula.html) is the benefit (before rounding down to next lower whole dollar) a person would receive if he/she elects to begin receiving retirement benefits at his/her normal retirement age. At this age, the benefit is neither reduced for early retirement nor increased for delayed retirement. The PIA is the sum of three separate percentages of portions of the AIME. The portions depend on the year in which a worker attains age 62, becomes disabled before age 62, or dies before attaining age 62. The threshold values, called 'bend points', that determine the three portions of the AIME are calculated using the 1979 thresholds multiplied by the ratio of the AWI for the indexing year to the AWI for 1979. The bend points are obtained using the `getPiaBendPtsSet()` function. A curve showing how these bend points change from year to year is shown below. Also shown are the curves for the calculation of a family maximum benefit (labeled "Maximum" in the legend).
+
+```{r bendPtPlot, echo = TRUE}
+plotdata <- melt(getPiaBendPtsSet(),
+                 id.vars = c("Year", "Formula"),
+                 variable.name = "Bend Point",
+                 value.name = "Value")
+ggplot(plotdata, aes(x = Year, y = Value,
+                     color = Formula,
+                     group = Formula)) +
+  geom_line() +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        axis.text.x = element_text(angle = 90, vjust = 0.5)) +
+  ylab("Bend Point") +
+  guides(colour = guide_legend(title.position = "top")) +
+  facet_wrap(~ `Bend Point`)
+```
+
+
+
+#### PIA formula
+These bend points represent thresholds that identify portions of an individual's AIME. A percentage of each portion is used to calculate the PIA. The example below illustrates how the bend points are used. In this example the individual first becomes eligible for old-age insurance benefits in 2017 and therefore has the formula percentages applied to the portions of his or her AIME using the bend points in the curves at the year 2017. The bend points are retrieved using the `getPiaBendPts()` function.
+
+1. The first percentage is applied to the first \$`r format(getPiaBendPts(year = 2017)[1], big.mark = ",")` of their AIME (the first bend point).
+2. If their AIME is higher than this amount, another percentage is applied to the portion of the AIME between the first bend point and \$`r format(getPiaBendPts(year = 2017)[2], big.mark = ",")` (the second bend point).
+3. If their AIME is higher than the second bend point, a third percentage is applied to any amount over that bend point.
+
+The percentages are; 90% for the AIME portion below the first bend point, 32% for the portion of the AIME above the first bend point and below the second bend point, and 15% for the portion of the AIME over the second bend point.
+
+The PIA is calculated by adding each of these values together. This amount is rounded to the next lower multiple of \$.10 if it is not already a multiple of \$.10.
+
+This calculation is performed by `getPia()` function.
+
+```{r piaAmount, echo = TRUE}
+piaBendsJQ <- getPiaBendPts(year(retireDateJQ))
+
+piaJQ <- getPia(piaBendsJQ, aimeJQ)
+```
+
+The primary insurance amount for John Q. Public is \$`r format(piaJQ, big.mark = ",")`. This the monthly benefit at normal retirement age.
+
+
+There is also a maximum family benefit calculation that determines the maximum benefit amount allowed. This can come into play for situations in which a family is eligible for more than one benefit.
+```{r maxBenefit, echo = TRUE}
+maxPiaBendsJQ <- getMaxPiaBendPts(year(retireDateJQ))
+
+maxBenefitJQ <- getFamilyMax(maxPiaBends = maxPiaBendsJQ, aime = aimeJQ)
+```
+
+The maximum family benefit calculated from John Q. Public's earnings history is \$`r format(maxBenefitJQ, big.mark = ",")`.
+
+
+
+## Early or Delayed Retirement
+In the case of early retirement, the PIA benefit is reduced 5/9 of one percent for each month before normal retirement age, up to 36 months. If the number of months exceeds 36, then the benefit is further reduced 5/12 of one percent per month. For example, if the number of reduction months is 60 (the maximum number for retirement at 62 when normal retirement age is 67), then the benefit is reduced by 30 percent. This maximum reduction is calculated as 36 months times 5/9 of 1 percent plus 24 months times 5/12 of 1 percent.
+
+In the case of delayed retirement, credit is given according to a [table of adjustments](https://www.ssa.gov/oact/ProgData/ar_drc.html) found on the Social Security web site.
+
+A graphic of adjustments for John Q. Public is shown below.
+
+```{r piaAdjPlot, echo = TRUE}
+ggplot(data = getPiaAdjustments(birthYear = lubridate::year(birthDateJQ)),
+       aes(x = `First Distribution Age`, y = `Percentage of PIA`, group = `Year of birth`)) +
+  geom_line() +
+  theme_minimal()
+```
+
+
+
+
+
+## Cost of Living Adjustment
+Legislation enacted in 1973 provides for cost-of-living adjustments, or COLAs. With COLAs, Social Security and Supplemental Security Income (SSI) benefits keep pace with inflation. The Social Security Act specifies a formula for determining each COLA. According to the formula, COLAs are based on increases in the Consumer Price Index for Urban Wage Earners and Clerical Workers (CPI-W). CPI-Ws are calculated on a monthly basis by the Bureau of Labor Statistics. A COLA effective for December of the current year is equal to the percentage increase (if any) in the average CPI-W for the third quarter of the current year over the average for the third quarter of the last year in which a COLA became effective. If there is an increase, it must be rounded to the nearest tenth of one percent. If there is no increase, or if the rounded increase is zero, there is no COLA. For an example computation of COLA, see the [Lastest Cost of Living Adjustment](https://www.ssa.gov/oact/COLA/latestCOLA.html) page on the Social Security web site. A table of CPI-W values can be found on the [CPI for Urban Wage Earners and Clerical Workers](https://www.ssa.gov/OACT/STATS/cpiw.html) page of the Social Security web site and is presented in Appendix VII. A plot of the Consumer Price Index for Urban Wage Earners and Clerical Workers is shown below. A COLA increases a person's Social Security retirement benefit by the product of the COLA and the PIA.
+
+```{r cpiwPlot, echo = TRUE}
+ggplot(getCpiwSet(), aes(x = Date, y = CPIW), color = Status) +
+  geom_line() +
+  theme_minimal()
+```
+
+A history of Cost of Living Adjustments derived from the CPI-W is shown below.
+
+```{r colaPlot}
+ggplot(getColaSet(), aes(x = Year, y = COLA)) +
+  geom_line() +
+  theme_minimal()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+

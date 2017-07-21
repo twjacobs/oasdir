@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "\nlibrary(\"reshape2\")\nlibrary(\"devtools\")\nlibrary(\"readODS\")\n\nmakeDataObjects <- function(){\n\n# National Average Wage Index Data\n  awi <- read_ods(\"./Average Wage Index Series.ods\",\n                  sheet = 1,\n                  col_names = TRUE)\n  awi$`Annual change` <- c(NA, (awi$AWI[2:(nrow(awi))] - awi$AWI[1:(nrow(awi) - 1)]) /\n                             awi$AWI[1:(nrow(awi) - 1)])\n  awi$Status <- \"Actual\"\n\n\n# awi model\n  awiMars <- earth::earth(AWI ~ Year, awi)\n\n\n\n\n# Contribution and Benefit Bases\n  benefitBases <- read_ods(\"./Contribution and Benefit Bases.ods\",\n                           sheet = 1,\n                           col_names = TRUE)\n  benefitBases$Status <- \"Actual\"\n\n# benefit bases model\n  benefitBasesMars <- earth::earth(Amount ~ Year, benefitBases)\n\n\n\n\n# Primary Insurance Amount Bend Points and\n  # Maximum Family Amount Bend Points\n  piaBends <- read_ods(\"./PIA Bend Points.ods\",\n                       sheet = 1,\n                       col_names = TRUE)\n\n\n\n  # Primary Insurance Amount Early/Late Adjustments\n  piaAdjustments <- read_ods(\"./PIA Adjustment.ods\",\n                             sheet = 1,\n                             col_names = TRUE)\n\n\n\n\n# Consumer Price Index for Urban Wage Earners and Clerical Workers\n  cpiw <- read_ods(\"./CPIW.ods\",\n                   sheet = 1,\n                   col_names = TRUE)\n  cpiw <- reshape2::melt(cpiw,\n                         id.vars = \"Year\",\n                         variable.name = \"Month\",\n                         value.name = \"CPIW\")\n  cpiw$Date <- lubridate::make_date(year = cpiw$Year, month = cpiw$Month)\n  cpiw$Year <- NULL\n  cpiw$Month <- NULL\n  cpiw <- cpiw[order(cpiw$Date), ]\n  cpiw <- cpiw[!is.na(cpiw$CPIW),]\n  cpiw$Status <- \"Actual\"\n\n# CPIW model\n  # Create a sequence of months since 1974 for regression\n  cpiw$m <- 0:(nrow(cpiw) - 1)\n  # Run regression on this sequence\n  cpiwMars <- earth::earth(CPIW ~ m, cpiw)\n  # Don't need m anymore\n  cpiw$m <- NULL\n\n\n\n\n# Cost of Living Adjustment\n  cola <- read_ods(\"./COLA.ods\",\n                   sheet = 1,\n                   col_names = TRUE)\n  cola$Status <- \"Actual\"\n\n\n\n\n# Create the full retirement age LUT (up to the current year)\n  fra <- data.frame(`Birth Year` = c(1937:thisYear),\n                    `Full Retirement Age` = c(65, 65+2/12, 65+4/12, 65+6/12, 65+8/12,\n                                              65+10/12, rep(66, times = 12), 66+2/12,\n                                              66+4/12, 66+6/12, 66+8/12, 66+10/12,\n                                              rep(67, times = (thisYear-1960+1))),\n                    check.names = FALSE)\n\n\n\n# Save all objects in sysdata.rda\n  devtools::use_data(awi, awiMars, benefitBases, benefitBasesMars,\n                     piaBends, piaAdjustments,\n                     cpiw, cpiwMars, cola, fra,\n                     pkg = \"../\",\n                     internal = TRUE, overwrite = TRUE)\n}\n\nsetwd(\"~/Dropbox/oasdir/data-raw\")\nmakeDataObjects()\nsetwd(\"~/Dropbox/oasdir\")\n\n\n\n\n",
+    "created" : 1490350199403.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3995925820",
+    "id" : "9E2303B3",
+    "lastKnownWriteTime" : 1491048281,
+    "last_content_update" : 1491048281,
+    "path" : "~/Dropbox/oasdir/data-raw/makeDataObjects.R",
+    "project_path" : "data-raw/makeDataObjects.R",
+    "properties" : {
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

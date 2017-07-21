@@ -1,0 +1,26 @@
+Package: oasdir
+Type: Package
+Title: Estimates Social Security Benefits
+Version: 0.1.0
+Author: Tim Jacobs
+Maintainer: The package maintainer <yourself@somewhere.net>
+Description: This package can be used to estimate Social Security Benefits.
+    But you need to supply wage data. If you don't have wage data, you can
+    obtain your wage data by creating an account on the Social Security web
+    site <https://www.ssa.gov/myaccount/> and click on the link to download
+    your earning record. Estimating your Social Security benefit typically
+    involves estimating future values for a number of parameters used in
+    the calculation - Wages, Average Wage Indices, Contribution and Benefit
+    Bases, and Cost of Living Adjustments must all be estimated to
+    calculate an OASDI benefit. This package provides default estimators for
+    those.
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+Imports: lubridate,
+    earth,
+    xml2
+RoxygenNote: 6.0.1
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr

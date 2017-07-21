@@ -1,0 +1,22 @@
+"0","# Read Social Security Statement"
+"0","ssStatement <- system.file(""extdata"", ""Early_Retirement_Sample.xml"", package = ""oasdir"")"
+"0","ssJQ <- readStatement(file = ssStatement)"
+"0","# Retrieve some of the information from the statement"
+"0","birthDateJQ <- as.Date(ssJQ$userInformation$dateOfBirth)"
+"0","retireElgYearJQ <- year(birthDateJQ + years(62))"
+"0","retireAgeJQ <-62"
+"0","retireDateJQ <- birthDateJQ + years(retireAgeJQ) + months(1)"
+"0","lastYear <- year(retireDateJQ)"
+"0","earningsJQMedicare <- getMedicareEarnings(ssJQ, endYear = lastYear)"
+"2","Medicare earnings starting with year 2015 are predicted.
+"
+"0","colnames(earningsJQMedicare) <- c(""startYear"", ""endYear"", ""Earnings"")"
+"0","earningsJQMedicare$Type <- ""Medicare"""
+"0","earningsJQFica <- getFicaEarnings(ssJQ, endYear = lastYear)"
+"2","Medicare earnings starting with year 2015 are predicted.
+"
+"2","Benefit base values after 2017 are predicted.
+"
+"0","colnames(earningsJQFica) <- c(""startYear"", ""endYear"", ""Earnings"")"
+"0","earningsJQFica$Type <- ""FICA"""
+"0","earningsJQLong <- rbind(earningsJQMedicare, earningsJQFica)"

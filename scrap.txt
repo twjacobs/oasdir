@@ -1,0 +1,10 @@
+
+#' @format A data frame with 4 variables:
+#' \describe{
+#'   \item{Year}{Year the index value applies to}
+#'   \item{AWI}{The National Average Wage Index}
+#'   \item{Annual change}{The percentage difference from the previous year}
+#'   \item{Status}{An indication of whether the data point is an
+#'   actual data point or an extrapolated data point}
+#' }
+#' @source \url{https://www.ssa.gov/OACT/COLA/awiseries.html/}

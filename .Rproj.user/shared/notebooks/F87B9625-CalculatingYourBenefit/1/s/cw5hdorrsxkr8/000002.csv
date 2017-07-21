@@ -1,0 +1,7 @@
+"0","aimeJQ <- getAimeValue(ssStmt = ssJQ, endYear = year(retireDateJQ))"
+"2","Medicare earnings starting with year 2015 are predicted.
+"
+"2","Benefit base values after 2017 are predicted.
+"
+"2","in getAwiValues: All values in the returned set are predicted.
+"

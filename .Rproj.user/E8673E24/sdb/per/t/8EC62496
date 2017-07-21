@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "\n# load:\n# -Average Wage Index Series\n# -Cola History\n# -Contribution and Benefits Bases\n# -Consumer Price Index for Urban Wages and Clerical Workers\n# -Primary Insurance Amount Adjustments\n# -Primary Insurance Amount Bends\n\nload(\"R/sysdata.rda\")\n\n\nthisYear <- lubridate::year(Sys.Date())\n\n",
+    "created" : 1490264479674.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1268869818",
+    "id" : "8EC62496",
+    "lastKnownWriteTime" : 1490350624,
+    "last_content_update" : 1490350624300,
+    "path" : "~/Dropbox/oasdir/R/initialize.R",
+    "project_path" : "R/initialize.R",
+    "properties" : {
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

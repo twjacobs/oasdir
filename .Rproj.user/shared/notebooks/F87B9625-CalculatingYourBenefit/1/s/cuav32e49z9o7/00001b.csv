@@ -1,0 +1,6 @@
+"0","ggplot(getAwiSet(endYear = 2025), aes(x = Year, y = AWI, color = Status)) +"
+"0","  geom_line() +"
+"0","  theme_minimal() +"
+"0","  theme(legend.position = ""bottom"") +"
+"0","  guides(colour = guide_legend(title = NULL)) +"
+"0","  scale_y_continuous(labels = dollar_format()) "
