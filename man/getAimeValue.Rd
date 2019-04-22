@@ -9,18 +9,21 @@ were realized. The indexing year is the year two years prior to
 the Normal Retirement Age (NRA) year. In other words, it is the
 year a person turns 60. This function returns the Average Indexed
 Monthly Earnings (AIME) for the highest 35 years of indexed
-earnings after the year a person turns 21. Note the AIME calculation
-always uses 35 years of earnings even if it means some years of
-$0 earnings must be included. If the endYear is in the future,
-estimates of FICA earnings and AWI are used and appropriate
-warnings are issued.}
+earning . Note the AIME calculation always uses 35 years of earnings
+even if it means some years of $0 earnings must be included. If the
+endYear is in the future, estimates of FICA earnings and AWI are used
+and appropriate warnings are issued. Estimated earnings are calculate
+using a MARS model based on previous years earnings unless predict = FALSE
+in which case the last year's earnings is replicated to the endYear.}
 \usage{
-getAimeValue(ssStmt = NULL, endYear = NULL)
+getAimeValue(ssStmt = NULL, endYear = NULL, predict = FALSE)
 }
 \arguments{
 \item{ssStmt}{the Social Security Statement as retrieved through read_xml_ssStatement()}
 
 \item{endYear}{the last year to include in the calculation}
+
+\item{predict}{if TRUE then use a MARS model to predict future earnings}
 }
 \value{
 The Average Indexed Monthly Earnings value
@@ -30,16 +33,15 @@ Indexed earnings are FICA earnings that have been adjusted using
 a ratio of the National Averge Wage Index (AWI) for an individuals
 indexing year over the Average Wage Index for the year the earnings
 were realized. The indexing year is the year two years prior to
-the Normal Retirement Age (NRA) year. In other words, it is the
+the Normal Retirement Age (NRA) year (i.e., the
 year a person turns 60. This function returns the Average Indexed
 Monthly Earnings (AIME) for the highest 35 years of indexed
-earnings after the year a person turns 21. Note the AIME calculation
-always uses 35 years of earnings even if it means some years of
-$0 earnings must be included. If the endYear is in the future,
-estimates of FICA earnings and AWI are used and appropriate
-warnings are issued.
+earnings. Note the AIME calculation always uses 35 years of earnings
+even if it means some years of $0 earnings must be included. If the
+endYear is in the future, estimates of FICA earnings and AWI are
+used and appropriate warnings are issued.
 }
 \examples{
-getAimeValue(ssStmt = JQPublicStatement, endYear = 2021)
+getAimeValue(ssStmt = JQPublicStatement, endYear = 2021, predict = FALSE)
 
 }

@@ -4,12 +4,15 @@
 \alias{getMedicareEarnings}
 \title{Return the \emph{Medicare} earnings data set.}
 \usage{
-getMedicareEarnings(statement = NULL, endYear = NULL)
+getMedicareEarnings(statement = NULL, endYear = NULL, predict = FALSE)
 }
 \arguments{
 \item{statement}{the Social Security Statement Object returned from \code{readStatement}}
 
 \item{endYear}{the last year to include in the returned data set}
+
+\item{predict}{if TRUE, use a MARS model to predict future earnings. Otherwise replicate
+the last know earnings value (default)}
 }
 \value{
 the Medicare earnings data set

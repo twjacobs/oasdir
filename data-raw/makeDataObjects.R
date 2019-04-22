@@ -102,9 +102,9 @@ makeDataObjects <- function(){
                      internal = TRUE, overwrite = TRUE)
 }
 
-setwd("~/Dropbox/oasdir/data-raw")
+setwd("~/Projects/Financial/Oasdir/data-raw")
 makeDataObjects()
-setwd("~/Dropbox/oasdir")
+setwd("~/Projects/Financial/Oasdir")
 
 
 
