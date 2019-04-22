@@ -4,10 +4,10 @@
 #' a ratio of the National Averge Wage Index (AWI) for an individuals
 #' indexing year over the Average Wage Index for the year the earnings
 #' were realized. The indexing year is the year two years prior to
-#' the Normal Retirement Age (NRA) year. In other words, it is the
-#' year a person turns 60. This function returns the Average Indexed
+#' the Normal Retirement Age (NRA) year (i.e., the
+#' year a person turns 60.) This function returns the Average Indexed
 #' Monthly Earnings (AIME) for the highest 35 years of indexed
-#' earnings after the year a person turns 21. Note the AIME calculation
+#' earnings. Note the AIME calculation
 #' always uses 35 years of earnings even if it means some years of
 #' $0 earnings must be included. If the endYear is in the future,
 #' estimates of FICA earnings and AWI are used and appropriate
@@ -15,20 +15,21 @@
 #'
 #' @param ssStmt the Social Security Statement as retrieved through read_xml_ssStatement()
 #' @param endYear the last year to include in the calculation
+#' @param predict if TRUE, use a MARS model to predict future earnings
 #' @return The Average Indexed Monthly Earnings set
 #' @examples
-#' getAimeSet(ssStmt = JQPublicStatement, endYear = 2021)
+#' getAimeSet(ssStmt = JQPublicStatement, endYear = 2021, predict = FALSE)
 #'
 #' @export
-getAimeSet <- function(ssStmt = NULL, endYear = NULL){
+getAimeSet <- function(ssStmt = NULL, endYear = NULL, predict = TRUE){
   birthDate <- as.Date(ssStmt$userInformation$dateOfBirth)
   retireElgYear <- lubridate::year(birthDate + years(62))
 
-  indexedEarnings <- getFicaEarnings(ssStmt, endYear = endYear)
+  indexedEarnings <- getFicaEarnings(ssStmt, endYear = endYear, predict = predict)
 
   # Remove any earnings before the age of 22
-  indexedEarnings <- indexedEarnings[indexedEarnings$startYear >=
-                                 lubridate::year(ssStmt$userInformation$dateOfBirth) + 22,]
+  # indexedEarnings <- indexedEarnings[indexedEarnings$startYear >=
+  #                                lubridate::year(ssStmt$userInformation$dateOfBirth) + 22,]
 
   ### Now calculate the Average Indexed Monthly Earnings
   # get base awi amount
@@ -65,20 +66,20 @@ getAimeSet <- function(ssStmt = NULL, endYear = NULL){
 #' the Normal Retirement Age (NRA) year. In other words, it is the
 #' year a person turns 60. This function returns the Average Indexed
 #' Monthly Earnings (AIME) for the highest 35 years of indexed
-#' earnings after the year a person turns 21. Note the AIME calculation
-#' always uses 35 years of earnings even if it means some years of
-#' $0 earnings must be included. If the endYear is in the future,
-#' estimates of FICA earnings and AWI are used and appropriate
-#' warnings are issued.
+#' earnings. Note the AIME calculation always uses 35 years of earnings
+#' even if it means some years of $0 earnings must be included. If the
+#' endYear is in the future, estimates of FICA earnings and AWI are used
+#' and appropriate warnings are issued.
 #'
 #' @param ssStmt the Social Security Statement as retrieved through read_xml_ssStatement()
 #' @param endYear the last year to include in the calculation
+#' @param predict if TRUE, use a MARS model to predict future FICA values, otherwise replicate last know value
 #' @return The Average Indexed Monthly Earnings value
 #' @examples
-#' getAimeValue(ssStmt = JQPublicStatement, endYear = 2021)
+#' getAimeValue(ssStmt = JQPublicStatement, endYear = 2021, predict = FALSE)
 #'
 #' @export
-getAimeValue <- function(ssStmt = NULL, endYear = NULL){
+getAimeValue <- function(ssStmt = NULL, endYear = NULL, predict = TRUE){
 
   # return calculatiom of AIME
   floor(sum(getAimeSet(ssStmt = ssStmt, endYear = endYear)$adjEarnings)/420)
