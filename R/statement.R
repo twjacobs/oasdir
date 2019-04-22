@@ -137,13 +137,14 @@ readStatement <- function(file = NULL) {
 #'
 #' @param endYear the last year to include in the returned data set
 #' @param statement the Social Security Statement Object returned from \code{readStatement}
+#' @param predict if TRUE use a MARS model to predict future wage earnings, otherwise just replicate the last known value
 #' @return the FICA earnings data set
 #' @examples
 #' getFicaEarnings(statement = myStatement, endYear = 2025)
 #' getFicaEarnings(statement = myStatement)
 
 #' @export
-getFicaEarnings <- function(statement = NULL, endYear = NULL) {
+getFicaEarnings <- function(statement = NULL, endYear = NULL, predict = TRUE) {
   if(is.null(statement) || missing(statement)){
     stop(paste("Parameter 'statement' is not optional.",
                "Use 'readStatement' to get a statement object and pass that into this function.\n",
@@ -159,7 +160,7 @@ getFicaEarnings <- function(statement = NULL, endYear = NULL) {
     return(statement$earnings[, c("startYear", "endYear", "ficaEarnings")])
 
   } else {
-    medicareEarnings <- getMedicareEarnings(statement, endYear = endYear)$medicareEarnings
+    medicareEarnings <- getMedicareEarnings(statement, endYear = endYear, predict = predict)$medicareEarnings
     benefitBaseValues <- getBenefitBaseValues(min(statement$earnings$startYear):endYear)
 
     return(data.frame(startYear = min(statement$earnings$startYear):endYear,
@@ -190,13 +191,14 @@ getFicaEarnings <- function(statement = NULL, endYear = NULL) {
 #'
 #' @param endYear the last year to include in the returned data set
 #' @param statement the Social Security Statement Object returned from \code{readStatement}
+#' @param predict if TRUE, use a MARS model to predict future medicare earnings, else replicate the last know value
 #' @return the Medicare earnings data set
 #' @examples
 #' getMedicareEarnings(statement = myStatement, endYear = 2025)
 #' getMedicareEarnings(statement = myStatement)
 
 #' @export
-getMedicareEarnings <- function(statement = NULL, endYear = NULL) {
+getMedicareEarnings <- function(statement = NULL, endYear = NULL, predict = TRUE) {
   if(is.null(statement) || missing(statement)){
     stop(paste("parameter 'statement' is not optional.",
                "Use 'readStatement' to get a statement object and pass that into this function.\n",
@@ -215,7 +217,12 @@ getMedicareEarnings <- function(statement = NULL, endYear = NULL) {
     warning("Medicare earnings starting with year ", beginPrediction, " are predicted.\n")
     medicareMars <- earth::earth(medicareEarnings ~ startYear,
                                  statement$earnings)
-    medicareEarnings = predict(medicareMars, newdata = beginPrediction:endYear)
+    if(predict) {
+      medicareEarnings = predict(medicareMars, newdata = beginPrediction:endYear)
+    } else {
+      medicareEarnings = rep(statement$earnings$medicareEarnings[nrow(statement$earnings)],
+                             times = endYear - beginPrediction + 1)
+    }
     if(length(which(medicareEarnings < 0)) > 0){
       medicareEarnings[which(medicareEarnings < 0)] <- 0
     }
