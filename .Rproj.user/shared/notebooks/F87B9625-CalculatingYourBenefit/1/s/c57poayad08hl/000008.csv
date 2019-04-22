@@ -1,3 +1,0 @@
-"0","ggplot(getColaSet(), aes(x = Year, y = COLA)) +"
-"0","  geom_line() +"
-"0","  theme_minimal()"

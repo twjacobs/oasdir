@@ -1,3 +1,0 @@
-"0","ggplot(getCpiwSet(), aes(x = Date, y = CPIW), color = Status) +"
-"0","  geom_line() +"
-"0","  theme_minimal()"

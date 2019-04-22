@@ -1,3 +1,0 @@
-"0","ggplot(getFraSet(), aes(x = `Birth Year`, y = `Full Retirement Age`)) +"
-"0","  geom_line() +"
-"0","  theme_minimal()"
