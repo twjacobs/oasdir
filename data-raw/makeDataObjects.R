@@ -2,6 +2,7 @@
 library("reshape2")
 library("devtools")
 library("readODS")
+library("rprojroot")
 
 makeDataObjects <- function(){
 
@@ -102,9 +103,9 @@ makeDataObjects <- function(){
                      internal = TRUE, overwrite = TRUE)
 }
 
-setwd("~/Projects/Financial/Oasdir/data-raw")
+setwd(paste0(rprojroot::find_rstudio_root_file(),"/data-raw"))
 makeDataObjects()
-setwd("~/Projects/Financial/Oasdir")
+setwd(rprojroot::find_rstudio_root_file())
 
 
 
